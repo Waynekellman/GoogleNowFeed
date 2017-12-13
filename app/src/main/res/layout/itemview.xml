@@ -26,7 +26,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/url"
-            android:autoLink="web"
             android:layout_gravity="bottom"/>
     </android.support.v7.widget.CardView>
 
