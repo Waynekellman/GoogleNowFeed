@@ -1,5 +1,7 @@
 package com.nyc.googlenowfeed.controller;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -31,8 +33,17 @@ public class HackerAdapter extends RecyclerView.Adapter<HackerAdapter.HackerView
     }
 
     @Override
-    public void onBindViewHolder(HackerViewHolder holder, int position) {
+    public void onBindViewHolder(final HackerViewHolder holder, int position) {
         holder.onBind(hackerModels.get(position));
+        holder.url.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                String uri = holder.uri;
+                intent.setData(Uri.parse(uri));
+                holder.itemView.getContext().startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -43,6 +54,7 @@ public class HackerAdapter extends RecyclerView.Adapter<HackerAdapter.HackerView
     public class HackerViewHolder extends RecyclerView.ViewHolder{
 
         private TextView title, url;
+        private String uri;
 
         public HackerViewHolder(View itemView) {
             super(itemView);
@@ -52,7 +64,8 @@ public class HackerAdapter extends RecyclerView.Adapter<HackerAdapter.HackerView
 
         public void onBind(HackerModel hackerModel){
             title.setText(hackerModel.getTitle());
-            url.setText(hackerModel.getUrl());
+            url.setText("source here");
+            uri = hackerModel.getUrl();
         }
     }
 }
