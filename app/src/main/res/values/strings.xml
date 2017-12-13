@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">GoogleNowFeed</string>
+    <string name="title">Article Title</string>
+    <string name="url">Article Url</string>
+</resources>
