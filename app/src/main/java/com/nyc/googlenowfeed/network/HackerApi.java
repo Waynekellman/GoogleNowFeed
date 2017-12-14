@@ -15,6 +15,6 @@ public interface HackerApi {
     @GET("topstories.json")
     Call<Integer[]> getmodel();
 
-    @GET("item/{p}.json?print=pretty")
-    Call<HackerModel> getHackerNews(@Path("p") int id);
+    @GET("item/{item-id}.json?print=pretty")
+    Call<HackerModel> getHackerNews(@Path("item-id") int id);
 }
