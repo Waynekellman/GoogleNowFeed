@@ -87,16 +87,27 @@ public class HackerAdapter extends RecyclerView.Adapter<HackerAdapter.HackerView
             points.setText(pointsString);
             String by = "by " + hackerModel.getBy();
             author.setText(by);
-            String dateFromUnix = getDate(hackerModel.getTime());
             String unixTime = String.valueOf(hackerModel.getTime());
-            Log.d(TAG, unixTime);
+//            Log.d(TAG, "unixTime "+unixTime);
             Long tsLong = System.currentTimeMillis()/1000;
-            Log.d(TAG,String.valueOf(tsLong));
+//            Log.d(TAG,"tsLong "+String.valueOf(tsLong));
             long timeSincePost = tsLong - hackerModel.getTime();
-            String currentTime = getDate(timeSincePost);
-            Log.d(TAG,currentTime);
-            date.setText(dateFromUnix);
-
+            Log.d(TAG,"timeSincePost " + timeSincePost);
+            double current = timeSincePost/60.0;
+            Log.d(TAG,"current " + current);
+            Log.d(TAG,"current time correct " + getDate(current));
+//            Log.d(TAG,"currentTime "+currentTime);
+            String currentTime;
+            if (current < 60) {
+                currentTime = getDate(current) + " minutes ago";
+            } else {
+                if (getDate(current) == 1) {
+                    currentTime = getDate(current) + " hour ago";
+                } else {
+                    currentTime = getDate(current) + " hours ago";
+                }
+            }
+            date.setText(""+ currentTime);
         }
 
         public String domainFromUrl(String url){
@@ -109,14 +120,12 @@ public class HackerAdapter extends RecyclerView.Adapter<HackerAdapter.HackerView
 
             return domain;
         }
-        private String getDate(long time) {
-            double timeInHours = time/100/60/60;
-            String timeAsString = String.valueOf(timeInHours) + " hours ago";
+        private int getDate(double time) {
+            if(time > 60){
+                time = time/60;
+            }
 
-            Calendar cal = Calendar.getInstance(Locale.ENGLISH);
-            cal.setTimeInMillis(time);
-            String date = DateFormat.format("h:mm", cal).toString();
-            return date;
+            return (int) time;
         }
     }
 }

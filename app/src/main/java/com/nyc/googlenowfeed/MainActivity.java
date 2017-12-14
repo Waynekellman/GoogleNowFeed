@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        showProgress();
         hackerNewsArticles = new ArrayList<>();
         hackerAPI();
 
@@ -47,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 5000);
 
-        showProgress();
 
 
 
@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Integer[]> call, Throwable t) {
                 Log.d(TAG,"first failed " + t.getLocalizedMessage());
+                t.printStackTrace();
             }
         });
 
