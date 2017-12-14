@@ -3,16 +3,17 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:cardview="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_width="320dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center|top">
 
     <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
         android:layout_gravity="center"
         android:layout_marginBottom="5dp"
         card_view:cardCornerRadius="@dimen/corner_dim"
-        card_view:cardElevation="@dimen/cardview_default_elevation"
+        card_view:cardElevation="2dp"
         cardview:cardUseCompatPadding="true">
 
         <TextView
@@ -20,13 +21,37 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/title"
-            android:layout_gravity="top"/>
+            android:layout_gravity="top"
+            android:gravity="center"/>
+        <TextView
+            android:id="@+id/points"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="@string/points"
+            android:gravity="start"/>
+        <TextView
+            android:id="@+id/by"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="15dp"
+            android:text="@string/author"
+            android:gravity="start"/>
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/date"
+            android:layout_gravity="center"/>
         <TextView
             android:id="@+id/url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/url"
-            android:layout_gravity="bottom"/>
+            android:layout_gravity="bottom"
+            android:textColor="@color/BLUE"
+            android:gravity="end"/>
     </android.support.v7.widget.CardView>
 
 </LinearLayout>

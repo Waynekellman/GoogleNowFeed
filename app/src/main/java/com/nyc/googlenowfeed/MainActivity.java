@@ -1,5 +1,6 @@
 package com.nyc.googlenowfeed;
 
+import android.app.ProgressDialog;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -46,15 +47,27 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 5000);
 
-
+        showProgress();
 
 
 
     }
+    public void showProgress() {
+        final int time = 5000;
+        final ProgressDialog dlg = new ProgressDialog(this);
+        dlg.setMessage("Loading data...");
+        dlg.setCancelable(false);
+        dlg.show();
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                dlg.dismiss();
+            }
+        }, time);
+    }
 
     private void initRecView() {
         HackerAdapter hackerAdapter = new HackerAdapter(hackerNewsArticles);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setAdapter(hackerAdapter);
         recyclerView.setLayoutManager(linearLayoutManager);
     }
@@ -78,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 int i = 0;
                 for (int n : hackerTopStoriesModel.getTopstorie()) {
 
-//                    Log.d(TAG, String.valueOf(n));
+                    Log.d(TAG, String.valueOf(n));
                     if(i <10) {
                         Call<HackerModel> getHackerNews2 = hackService.getHackerNews(n);
                         getHackerNews2.enqueue(new Callback<HackerModel>() {
