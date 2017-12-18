@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
         hackerNewsArticles = new ArrayList<>();
         hackerAPI();
 
+
+
         recyclerView = findViewById(R.id.recyclerview);
         new Handler().postDelayed(new Runnable() {
             @Override
