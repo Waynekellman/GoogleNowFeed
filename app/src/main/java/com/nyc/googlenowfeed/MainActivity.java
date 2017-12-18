@@ -2,6 +2,8 @@ package com.nyc.googlenowfeed;
 
 import android.app.ProgressDialog;
 import android.os.Handler;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -49,6 +51,13 @@ public class MainActivity extends AppCompatActivity {
                 initRecView();
             }
         }, 5000);
+
+        NoteFragment fragment = new NoteFragment();
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.frag_layout, fragment);
+        transaction.commit();
+
 
 
 
