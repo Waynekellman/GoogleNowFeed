@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         final HackerApi hackService = retrofit.create(HackerApi.class);
-        Call<Integer[]> getHackerNews = hackService.getmodel();
+        final Call<Integer[]> getHackerNews = hackService.getmodel();
         getHackerNews.enqueue(new Callback<Integer[]>() {
             @Override
             public void onResponse(Call<Integer[]> call, Response<Integer[]> response) {
@@ -111,7 +111,17 @@ public class MainActivity extends AppCompatActivity {
                     }
                     i++;
                 }
-
+//getHackerNews.enqueue(new Callback<Integer[]>() {
+//    @Override
+//    public void onResponse(Call<Integer[]> call, Response<Integer[]> response) {
+//        Integer[] responseArray = response.body();
+//    }
+//
+//    @Override
+//    public void onFailure(Call<Integer[]> call, Throwable t) {
+//        Log.e("onFailure:", t.getMessage());
+//    }
+//});
             }
 
             @Override

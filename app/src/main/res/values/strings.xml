@@ -5,4 +5,8 @@
     <string name="points">Points</string>
     <string name="author">Author</string>
     <string name="date">Date</string>
+    <string name="message">message</string>
+    <string name="time_stamp">time_stamp</string>
+    <string name="latitude">latitude</string>
+    <string name="longitude">longitude</string>
 </resources>

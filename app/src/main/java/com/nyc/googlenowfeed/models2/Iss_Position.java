@@ -5,4 +5,19 @@ package com.nyc.googlenowfeed.models2;
  */
 
 public class Iss_Position {
+
+    private int latitude;
+    private int longitude;
+
+    public int getLatitude() {
+        return latitude;
+    }
+
+    public int getLongitude() {
+        return longitude;
+    }
+
+
+
+
 }
