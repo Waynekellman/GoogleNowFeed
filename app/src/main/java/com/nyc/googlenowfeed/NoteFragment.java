@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.ArrayList;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,7 +36,6 @@ public class NoteFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_note, container, false);
         saveNote = getContext().getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
 
-
         title = rootView.findViewById(R.id.title_note);
         description = rootView.findViewById(R.id.description_note);
         save = rootView.findViewById(R.id.save_note);
@@ -44,8 +45,8 @@ public class NoteFragment extends Fragment {
             public void onClick(View view) {
 
                 SharedPreferences.Editor editor = saveNote.edit();
-                editor.putString("title",title.getText().toString());
-                editor.putString("note", description.getText().toString());
+                editor.putString(title.getText().toString(),title.getText().toString());
+                editor.putString(title.getText().toString() + "note", description.getText().toString());
                 editor.putBoolean("BooleanKey", true);
                 editor.commit();
                 title.setText("");
