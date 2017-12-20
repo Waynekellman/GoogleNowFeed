@@ -3,6 +3,8 @@ package com.nyc.googlenowfeed;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Handler;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -57,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
         spaceStationApi();
 
 
+
+
         recyclerView = findViewById(R.id.recyclerview);
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -66,6 +70,13 @@ public class MainActivity extends AppCompatActivity {
                 setViews();
             }
         }, 5000);
+
+        NoteFragment fragment = new NoteFragment();
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.frag_layout, fragment);
+        transaction.commit();
+
 
 
 

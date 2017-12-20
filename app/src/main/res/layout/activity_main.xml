@@ -8,6 +8,13 @@
     android:orientation="vertical"
     tools:context="com.nyc.googlenowfeed.MainActivity">
 
+    <FrameLayout
+        android:id="@+id/frag_layout"
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+
+    </FrameLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
