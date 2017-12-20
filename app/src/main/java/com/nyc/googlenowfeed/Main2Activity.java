@@ -4,9 +4,12 @@ import android.app.ProgressDialog;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.nyc.googlenowfeed.controller2.SpaceStationAdapter;
 import com.nyc.googlenowfeed.models2.SpaceStationModels;
 import com.nyc.googlenowfeed.network2.SpaceStationApi;
 
@@ -27,16 +30,22 @@ public class Main2Activity extends AppCompatActivity {
     private TextView timeStamp;
     private TextView latitude;
     private TextView longitude;
+    private RecyclerView recyclerView;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
+        setContentView(R.layout.spaceitemview);
         spaceStationModels = new SpaceStationModels();
         //Creates Views!
         createViews();
+
+        message = findViewById(R.id.message);
+        timeStamp = findViewById(R.id.time_stamp);
+        latitude = findViewById(R.id.latitude);
+        longitude = findViewById(R.id.longitude);
 
 
 
@@ -49,24 +58,30 @@ public class Main2Activity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.d("MainActivity", spaceStationModels.getMessage());
+//                Log.d("MainActivity", spaceStationModels.getMessage());
+                message.setText(spaceStationModels.getMessage());
+                timeStamp.setText(spaceStationModels.getTimestamp());
+                latitude.setText(String.valueOf(spaceStationModels.iss_position().getLatitude()));
+                longitude.setText(String.valueOf(spaceStationModels.iss_position().getLongitude()));
             }
-        },5000);
+        },10000);
+
 
         SpaceStationApi service = retrofit.create(SpaceStationApi.class);
         Call<SpaceStationModels> getmodel = service.getSpaceStation();
         getmodel.enqueue(new Callback<SpaceStationModels>() {
             @Override
             public void onResponse(Call<SpaceStationModels> call, Response<SpaceStationModels> response) {
-               String modelJSON = String.valueOf(response.body());
-               Log.d(TAG, "modelJson: "+ modelJSON.toString());
-                try {
-                    JSONObject initialObject= new JSONObject(modelJSON);
-
-                    Log.d(TAG,"Initial Object : " + initialObject.toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+//               String modelJSON = String.valueOf(response.body());
+               spaceStationModels = response.body();
+//               Log.d(TAG, "modelJson: "+ modelJSON.toString());
+//                try {
+//                    JSONObject initialObject= new JSONObject(modelJSON);
+//
+//                    Log.d(TAG,"Initial Object : " + initialObject.toString());
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
 
             }
 
@@ -93,11 +108,13 @@ public class Main2Activity extends AppCompatActivity {
 //    }
 
 
+
     public void createViews(){
          message = (TextView) findViewById(R.id.message);
          timeStamp = (TextView)findViewById(R.id.time_stamp);
          latitude = (TextView)findViewById(R.id.latitude);
          longitude = (TextView)findViewById(R.id.longitude);
+         recyclerView = findViewById(R.id.recyclerview2);
     }
 
 
