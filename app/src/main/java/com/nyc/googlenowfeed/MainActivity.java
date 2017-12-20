@@ -1,12 +1,15 @@
 package com.nyc.googlenowfeed;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -31,11 +34,13 @@ public class MainActivity extends AppCompatActivity {
     private HackerTopStoriesModel hackerTopStoriesModel;
     private ArrayList<HackerModel> hackerNewsArticles;
     private RecyclerView recyclerView;
+    private Button spaceButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        spaceButton = (Button)findViewById(R.id.Main2Activity);
         showProgress();
         hackerNewsArticles = new ArrayList<>();
         hackerAPI();
@@ -47,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
                 initRecView();
             }
         }, 5000);
-
 
 
 
@@ -124,12 +128,22 @@ public class MainActivity extends AppCompatActivity {
 //});
             }
 
+
+
             @Override
             public void onFailure(Call<Integer[]> call, Throwable t) {
                 Log.d(TAG,"first failed " + t.getLocalizedMessage());
                 t.printStackTrace();
             }
         });
+
+       spaceButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               Intent spaceIntent = new Intent(MainActivity.this,Main2Activity.class);
+               startActivity(spaceIntent);
+           }
+       });
 
 
 

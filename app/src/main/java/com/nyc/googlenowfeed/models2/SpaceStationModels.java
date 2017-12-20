@@ -10,6 +10,10 @@ public class SpaceStationModels {
     private String timestamp;
     private Iss_Position iss_position;
 
+    public SpaceStationModels(){
+
+    }
+
     public SpaceStationModels(String message, String timestamp, Iss_Position iss_position) {
         this.message = message;
         this.timestamp = timestamp;
