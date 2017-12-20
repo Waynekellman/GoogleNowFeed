@@ -79,14 +79,7 @@ public class HackerAdapter extends RecyclerView.Adapter<HackerAdapter.HackerView
         }
 
         public void onBind(HackerModel hackerModel){
-            title.setText(hackerModel.getTitle());
-            uri = hackerModel.getUrl();
-            String domain = domainFromUrl(uri);
-            url.setText(domain);
-            String pointsString = "" + hackerModel.getScore() + " points";
-            points.setText(pointsString);
-            String by = "by " + hackerModel.getBy();
-            author.setText(by);
+            setNormalViews(hackerModel);
             String unixTime = String.valueOf(hackerModel.getTime());
 //            Log.d(TAG, "unixTime "+unixTime);
             Long tsLong = System.currentTimeMillis()/1000;
@@ -108,6 +101,17 @@ public class HackerAdapter extends RecyclerView.Adapter<HackerAdapter.HackerView
                 }
             }
             date.setText(""+ currentTime);
+        }
+
+        private void setNormalViews(HackerModel hackerModel) {
+            title.setText(hackerModel.getTitle());
+            uri = hackerModel.getUrl();
+            String domain = domainFromUrl(uri);
+            url.setText(domain);
+            String pointsString = "" + hackerModel.getScore() + " points";
+            points.setText(pointsString);
+            String by = "by " + hackerModel.getBy();
+            author.setText(by);
         }
 
         public String domainFromUrl(String url){
