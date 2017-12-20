@@ -5,18 +5,22 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nyc.googlenowfeed.controller.HackerAdapter;
 import com.nyc.googlenowfeed.models.HackerModel;
 import com.nyc.googlenowfeed.models.HackerTopStoriesModel;
+import com.nyc.googlenowfeed.models2.SpaceStationModels;
 import com.nyc.googlenowfeed.network.HackerApi;
+import com.nyc.googlenowfeed.network2.SpaceStationApi;
 
 import java.util.ArrayList;
 
@@ -34,26 +38,97 @@ public class MainActivity extends AppCompatActivity {
     private HackerTopStoriesModel hackerTopStoriesModel;
     private ArrayList<HackerModel> hackerNewsArticles;
     private RecyclerView recyclerView;
-    private Button spaceButton;
+    private SpaceStationModels spaceStationModels;
+
+    private TextView message,timeStamp,latitude,longitude;
+    private CardView hackerCardViews;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        spaceButton = (Button)findViewById(R.id.Main2Activity);
+        setModels();
+
+        createViews();
+        setViewInvisible();
         showProgress();
-        hackerNewsArticles = new ArrayList<>();
         hackerAPI();
+        spaceStationApi();
+
 
         recyclerView = findViewById(R.id.recyclerview);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 initRecView();
+                setViewsVisible();
+                setViews();
             }
         }, 5000);
 
 
+
+
+    }
+
+    private void setViewsVisible() {
+        message.setVisibility(View.VISIBLE);
+        timeStamp.setVisibility(View.VISIBLE);
+        latitude.setVisibility(View.VISIBLE);
+        longitude.setVisibility(View.VISIBLE);
+        hackerCardViews.setVisibility(View.VISIBLE);
+    }
+
+    private void setViewInvisible() {
+        message.setVisibility(View.INVISIBLE);
+        timeStamp.setVisibility(View.INVISIBLE);
+        latitude.setVisibility(View.INVISIBLE);
+        longitude.setVisibility(View.INVISIBLE);
+        hackerCardViews.setVisibility(View.INVISIBLE);
+    }
+
+    private void setModels() {
+        spaceStationModels = new SpaceStationModels();
+        hackerNewsArticles = new ArrayList<>();
+    }
+
+    private void setViews() {
+        message.setText(spaceStationModels.getMessage());
+        timeStamp.setText(spaceStationModels.getTimestamp());
+        latitude.setText(String.valueOf(spaceStationModels.iss_position().getLatitude()));
+        longitude.setText(String.valueOf(spaceStationModels.iss_position().getLongitude()));
+    }
+
+    private void spaceStationApi() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://api.open-notify.org/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        SpaceStationApi service = retrofit.create(SpaceStationApi.class);
+        Call<SpaceStationModels> getModel = service.getSpaceStation();
+        getModel.enqueue(new Callback<SpaceStationModels>() {
+            @Override
+            public void onResponse(Call<SpaceStationModels> call, Response<SpaceStationModels> response) {
+                spaceStationModels = response.body();
+
+            }
+
+            @Override
+            public void onFailure(Call<SpaceStationModels> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
+    public void createViews(){
+        message = findViewById(R.id.message);
+        timeStamp = findViewById(R.id.time_stamp);
+        latitude = findViewById(R.id.latitude);
+        longitude = findViewById(R.id.longitude);
+        spaceStationModels = new SpaceStationModels();
+        hackerCardViews = findViewById(R.id.hackerCardView);
 
     }
     public void showProgress() {
@@ -86,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         final HackerApi hackService = retrofit.create(HackerApi.class);
-        final Call<Integer[]> getHackerNews = hackService.getmodel();
+        final Call<Integer[]> getHackerNews = hackService.getModel();
         getHackerNews.enqueue(new Callback<Integer[]>() {
             @Override
             public void onResponse(Call<Integer[]> call, Response<Integer[]> response) {
@@ -115,17 +190,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                     i++;
                 }
-//getHackerNews.enqueue(new Callback<Integer[]>() {
-//    @Override
-//    public void onResponse(Call<Integer[]> call, Response<Integer[]> response) {
-//        Integer[] responseArray = response.body();
-//    }
-//
-//    @Override
-//    public void onFailure(Call<Integer[]> call, Throwable t) {
-//        Log.e("onFailure:", t.getMessage());
-//    }
-//});
             }
 
 
@@ -136,33 +200,5 @@ public class MainActivity extends AppCompatActivity {
                 t.printStackTrace();
             }
         });
-
-       spaceButton.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view) {
-               Intent spaceIntent = new Intent(MainActivity.this,Main2Activity.class);
-               startActivity(spaceIntent);
-           }
-       });
-
-
-
-        /**
-         * NYTimesService igService = retrofit.create(NYTimesService.class);
-         Call<BestSeller> getRecentMedia = igService.getBestSellers();
-         getRecentMedia.enqueue(new Callback<BestSeller>() {
-        @Override
-        public void onResponse(Call<BestSeller> call, Response<BestSeller> response) {
-        if (response.isSuccessful()) {
-        BestSeller NYTBestSellers = response.body();
-        mCardsData.add(NYTBestSellers);
-        }
-        }
-
-        @Override
-        public void onFailure(Call<BestSeller> call, Throwable t) {
-        }
-        });
-         */
     }
 }
