@@ -13,7 +13,7 @@ import retrofit2.http.Path;
 public interface HackerApi {
 
     @GET("topstories.json")
-    Call<Integer[]> getmodel();
+    Call<Integer[]> getModel();
 
     @GET("item/{item-id}.json?print=pretty")
     Call<HackerModel> getHackerNews(@Path("item-id") int id);
