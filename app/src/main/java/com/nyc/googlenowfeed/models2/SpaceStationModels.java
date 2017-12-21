@@ -14,12 +14,6 @@ public class SpaceStationModels {
 
     }
 
-    public SpaceStationModels(String message, String timestamp, Iss_Position iss_position) {
-        this.message = message;
-        this.timestamp = timestamp;
-        this.iss_position = iss_position;
-    }
-
     public void setMessage(String message) {
         this.message = message;
     }
