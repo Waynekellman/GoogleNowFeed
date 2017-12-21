@@ -1,36 +1,26 @@
 package com.nyc.googlenowfeed.controller;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateFormat;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
-import com.nyc.googlenowfeed.MainActivity;
 import com.nyc.googlenowfeed.R;
 import com.nyc.googlenowfeed.models.HackerModel;
-import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Locale;
+import java.util.List;
 
 /**
  * Created by Wayne Kellman on 12/13/17.
  */
 
 public class HackerAdapter extends RecyclerView.Adapter<HackerAdapter.HackerViewHolder>{
-    private ArrayList<HackerModel> hackerModels;
+    private List<HackerModel> hackerModels;
 
-    public HackerAdapter(ArrayList<HackerModel> hackerModels) {
+    public HackerAdapter(List<HackerModel> hackerModels) {
         this.hackerModels = hackerModels;
         notifyDataSetChanged();
     }
@@ -81,15 +71,14 @@ public class HackerAdapter extends RecyclerView.Adapter<HackerAdapter.HackerView
         public void onBind(HackerModel hackerModel){
             setNormalViews(hackerModel);
             String unixTime = String.valueOf(hackerModel.getTime());
-//            Log.d(TAG, "unixTime "+unixTime);
+            Log.d(TAG, "Hacker article time posted in unix: " + unixTime);
             Long tsLong = System.currentTimeMillis()/1000;
-//            Log.d(TAG,"tsLong "+String.valueOf(tsLong));
+            Log.d(TAG, "Current time: " + tsLong);
             long timeSincePost = tsLong - hackerModel.getTime();
             Log.d(TAG,"timeSincePost " + timeSincePost);
             double current = timeSincePost/60.0;
             Log.d(TAG,"current " + current);
             Log.d(TAG,"current time correct " + getDate(current));
-//            Log.d(TAG,"currentTime "+currentTime);
             String currentTime;
             if (current < 60) {
                 currentTime = getDate(current) + " minutes ago";
@@ -105,6 +94,7 @@ public class HackerAdapter extends RecyclerView.Adapter<HackerAdapter.HackerView
 
         private void setNormalViews(HackerModel hackerModel) {
             title.setText(hackerModel.getTitle());
+            Log.d(TAG, "title: " + hackerModel.getTitle());
             uri = hackerModel.getUrl();
             String domain = domainFromUrl(uri);
             url.setText(domain);
@@ -125,7 +115,7 @@ public class HackerAdapter extends RecyclerView.Adapter<HackerAdapter.HackerView
             return domain;
         }
         private int getDate(double time) {
-            if(time > 60){
+            if(time >= 60){
                 time = time/60;
             }
 

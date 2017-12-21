@@ -22,6 +22,8 @@ import com.nyc.googlenowfeed.models2.SpaceStationModels;
 import com.nyc.googlenowfeed.network.NetworkApi;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private String hackerBaseUrl = "https://hacker-news.firebaseio.com/v0/";
     private static final String TAG = "MainActivity";
     private HackerTopStoriesModel hackerTopStoriesModel;
-    private ArrayList<HackerModel> hackerNewsArticles;
+    private List<HackerModel> hackerNewsArticles;
     private RecyclerView recyclerView;
     private SpaceStationModels spaceStationModels;
 
@@ -44,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
     private CardView hackerCardViews;
     private NetworkApi service;
     private String hackerArticleBaseUrl = "https://hacker-news.firebaseio.com/v0/";
+    private HackerModel[] hackerModels;
+    private HackerModel model;
+    private Integer integer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                 setViewsVisible();
                 setViews();
             }
-        }, 6000);
+        }, 5000);
 
         NoteFragment fragment = new NoteFragment();
         FragmentManager manager = getSupportFragmentManager();
@@ -111,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setModels() {
         spaceStationModels = new SpaceStationModels();
-        hackerNewsArticles = new ArrayList<>();
+        hackerNewsArticles = new LinkedList<>();
     }
 
     private void setViews() {
@@ -153,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void showProgress() {
-        final int time = 6000;
+        final int time = 5000;
         final ProgressDialog dlg = new ProgressDialog(this);
         dlg.setMessage("Loading data...");
         dlg.setCancelable(false);
@@ -212,14 +217,24 @@ public class MainActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         service = retrofit.create(NetworkApi.class);
+        Integer[] integers = hackerTopStoriesModel.getTopstorie();
+        hackerModels = new HackerModel[10];
 
-        int i = 0;
-        for (int n : hackerTopStoriesModel.getTopstorie()) {
-
-
-            Log.d(TAG, String.valueOf(n));
+        for (int i = 0; i < integers.length; i++) {
             if (i < 10) {
-                Call<HackerModel> getHackerNews2 = service.getHackerNews(n);
+                Log.d(TAG, String.valueOf(integers[i]));
+                /**
+                 * The list is added out of order because the call is being made in a loop
+                 * so the responses for each model is added out of sync.
+                 * I still only recieve the articles I want though
+                 * and there isn't much order to the top 10 or so articles.
+                 *
+                 * The id is in the model as well as the list of top stories. If I wanted I could
+                 * make a hashmap with the id as the key and iterate through the topstories array to
+                 * create a new list of proper size but that seems more than necessary and probably
+                 * not best practice.
+                 */
+                Call<HackerModel> getHackerNews2 = service.getHackerNews(integers[i]);
                 getHackerNews2.enqueue(new Callback<HackerModel>() {
                     @Override
                     public void onResponse(Call<HackerModel> call, Response<HackerModel> response) {
@@ -235,7 +250,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
             }
-            i++;
 
         }
 
