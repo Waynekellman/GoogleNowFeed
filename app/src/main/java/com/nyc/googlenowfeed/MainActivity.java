@@ -1,7 +1,6 @@
 package com.nyc.googlenowfeed;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -12,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -21,8 +19,7 @@ import com.nyc.googlenowfeed.controller.HackerAdapter;
 import com.nyc.googlenowfeed.models.HackerModel;
 import com.nyc.googlenowfeed.models.HackerTopStoriesModel;
 import com.nyc.googlenowfeed.models2.SpaceStationModels;
-import com.nyc.googlenowfeed.network.HackerApi;
-import com.nyc.googlenowfeed.network2.SpaceStationApi;
+import com.nyc.googlenowfeed.network.NetworkApi;
 
 import java.util.ArrayList;
 
@@ -34,6 +31,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final String spaceStationBaseUrl = "http://api.open-notify.org/";
     public Retrofit mRetrofit;
     private String hackerBaseUrl = "https://hacker-news.firebaseio.com/v0/";
     private static final String TAG = "MainActivity";
@@ -44,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView message,timeStamp,latitude,longitude;
     private CardView hackerCardViews;
-
+    private NetworkApi service;
+    private String hackerArticleBaseUrl = "https://hacker-news.firebaseio.com/v0/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +57,17 @@ public class MainActivity extends AppCompatActivity {
         hackerAPI();
         spaceStationApi();
 
+        recyclerView = findViewById(R.id.recyclerview);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getArticleList();
+
+            }
+        }, 1000);
+
+
+
 
 
 
@@ -69,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 setViewsVisible();
                 setViews();
             }
-        }, 5000);
+        }, 6000);
 
         NoteFragment fragment = new NoteFragment();
         FragmentManager manager = getSupportFragmentManager();
@@ -113,11 +123,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void spaceStationApi() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://api.open-notify.org/")
+                .baseUrl(spaceStationBaseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        SpaceStationApi service = retrofit.create(SpaceStationApi.class);
+        service = retrofit.create(NetworkApi.class);
         Call<SpaceStationModels> getModel = service.getSpaceStation();
         getModel.enqueue(new Callback<SpaceStationModels>() {
             @Override
@@ -143,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void showProgress() {
-        final int time = 5000;
+        final int time = 6000;
         final ProgressDialog dlg = new ProgressDialog(this);
         dlg.setMessage("Loading data...");
         dlg.setCancelable(false);
@@ -171,36 +181,14 @@ public class MainActivity extends AppCompatActivity {
                 .baseUrl(hackerBaseUrl)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
-        final HackerApi hackService = retrofit.create(HackerApi.class);
-        final Call<Integer[]> getHackerNews = hackService.getModel();
+        service = retrofit.create(NetworkApi.class);
+        Call<Integer[]> getHackerNews = service.getModel();
         getHackerNews.enqueue(new Callback<Integer[]>() {
             @Override
             public void onResponse(Call<Integer[]> call, Response<Integer[]> response) {
                 hackerTopStoriesModel = new HackerTopStoriesModel();
                 hackerTopStoriesModel.setTopstorie(response.body());
-                int i = 0;
-                for (int n : hackerTopStoriesModel.getTopstorie()) {
 
-                    Log.d(TAG, String.valueOf(n));
-                    if(i <10) {
-                        Call<HackerModel> getHackerNews2 = hackService.getHackerNews(n);
-                        getHackerNews2.enqueue(new Callback<HackerModel>() {
-                            @Override
-                            public void onResponse(Call<HackerModel> call, Response<HackerModel> response) {
-                                hackerNewsArticles.add(response.body());
-                                Log.d(TAG, hackerNewsArticles.get(hackerNewsArticles.size() - 1).getTitle());
-                            }
-
-                            @Override
-                            public void onFailure(Call<HackerModel> call, Throwable t) {
-                                Log.d(TAG, "Second failed " + t.getLocalizedMessage());
-
-                                t.printStackTrace();
-                            }
-                        });
-                    }
-                    i++;
-                }
             }
 
 
@@ -211,5 +199,45 @@ public class MainActivity extends AppCompatActivity {
                 t.printStackTrace();
             }
         });
+    }
+
+    private void getArticleList() {
+
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(hackerArticleBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+        service = retrofit.create(NetworkApi.class);
+
+        int i = 0;
+        for (int n : hackerTopStoriesModel.getTopstorie()) {
+
+
+            Log.d(TAG, String.valueOf(n));
+            if (i < 10) {
+                Call<HackerModel> getHackerNews2 = service.getHackerNews(n);
+                getHackerNews2.enqueue(new Callback<HackerModel>() {
+                    @Override
+                    public void onResponse(Call<HackerModel> call, Response<HackerModel> response) {
+                        hackerNewsArticles.add(response.body());
+                        Log.d(TAG, hackerNewsArticles.get(hackerNewsArticles.size() - 1).getTitle());
+                    }
+
+                    @Override
+                    public void onFailure(Call<HackerModel> call, Throwable t) {
+                        Log.d(TAG, "Second failed " + t.getLocalizedMessage());
+
+                        t.printStackTrace();
+                    }
+                });
+            }
+            i++;
+
+        }
+
     }
 }

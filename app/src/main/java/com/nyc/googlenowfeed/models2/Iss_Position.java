@@ -6,14 +6,14 @@ package com.nyc.googlenowfeed.models2;
 
 public class Iss_Position {
 
-    private float latitude;
-    private float longitude;
+    private String latitude;
+    private String  longitude;
 
-    public float getLatitude() {
+    public String getLatitude() {
         return latitude;
     }
 
-    public float getLongitude() {
+    public String  getLongitude() {
         return longitude;
     }
 
