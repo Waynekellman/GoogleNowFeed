@@ -53,6 +53,11 @@ public class MainActivity extends AppCompatActivity {
     private Integer integer;
     private Button map;
 
+    private HackerAdapter hackerAdapter;
+    private Handler h = new Handler();
+    private int delay = 5000;
+    private Runnable runnable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,34 +65,13 @@ public class MainActivity extends AppCompatActivity {
         setModels();
 
         createViews();
-        setViewInvisible();
         showProgress();
         hackerAPI();
         spaceStationApi();
 
         recyclerView = findViewById(R.id.recyclerview);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getArticleList();
+        initRecView();
 
-            }
-        }, 2000);
-
-
-
-
-
-
-        recyclerView = findViewById(R.id.recyclerview);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                initRecView();
-                setViewsVisible();
-                setViews();
-            }
-        }, 5000);
 
         NoteFragment fragment = new NoteFragment();
         FragmentManager manager = getSupportFragmentManager();
@@ -109,24 +93,28 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+    @Override
+    protected void onResume() { //start handler as activity become visible
 
-    private void setViewsVisible() {
-        message.setVisibility(View.VISIBLE);
-        timeStamp.setVisibility(View.VISIBLE);
-        latitude.setVisibility(View.VISIBLE);
-        longitude.setVisibility(View.VISIBLE);
-        hackerCardViews.setVisibility(View.VISIBLE);
-        map.setVisibility(View.VISIBLE);
+        h.postDelayed(new Runnable() {
+            public void run() {
+                //do something
+                spaceStationApi();
+                runnable=this;
+
+                h.postDelayed(runnable, delay);
+            }
+        }, delay);
+
+        super.onResume();
     }
 
-    private void setViewInvisible() {
-        message.setVisibility(View.INVISIBLE);
-        timeStamp.setVisibility(View.INVISIBLE);
-        latitude.setVisibility(View.INVISIBLE);
-        longitude.setVisibility(View.INVISIBLE);
-        hackerCardViews.setVisibility(View.INVISIBLE);
-        map.setVisibility(View.INVISIBLE);
+    @Override
+    protected void onPause() {
+        h.removeCallbacks(runnable); //stop handler when activity not visible
+        super.onPause();
     }
+
 
     private void setModels() {
         spaceStationModels = new SpaceStationModels();
@@ -152,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<SpaceStationModels> call, Response<SpaceStationModels> response) {
                 spaceStationModels = response.body();
+                setViews();
                 Log.d(TAG, "Latitude: " + spaceStationModels.iss_position().getLatitude());
                 Log.d(TAG, "Longitude: " + spaceStationModels.iss_position().getLongitude());
 
@@ -188,8 +177,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initRecView() {
-        HackerAdapter hackerAdapter = new HackerAdapter(hackerNewsArticles);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+        hackerAdapter = new HackerAdapter(hackerNewsArticles);
         recyclerView.setAdapter(hackerAdapter);
         recyclerView.setLayoutManager(linearLayoutManager);
     }
@@ -210,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<Integer[]> call, Response<Integer[]> response) {
                 hackerTopStoriesModel = new HackerTopStoriesModel();
                 hackerTopStoriesModel.setTopstorie(response.body());
+                getArticleList();
 
             }
 
@@ -256,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<HackerModel> call, Response<HackerModel> response) {
                         hackerNewsArticles.add(response.body());
+                        hackerAdapter.notifyDataSetChanged();
                         Log.d(TAG, hackerNewsArticles.get(hackerNewsArticles.size() - 1).getTitle());
                     }
 
