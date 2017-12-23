@@ -1,6 +1,7 @@
 package com.nyc.googlenowfeed;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -11,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -46,9 +48,12 @@ public class MainActivity extends AppCompatActivity {
     private CardView hackerCardViews;
     private NetworkApi service;
     private String hackerArticleBaseUrl = "https://hacker-news.firebaseio.com/v0/";
-    private HackerModel[] hackerModels;
-    private HackerModel model;
-    private Integer integer;
+    private Button map;
+
+    private HackerAdapter hackerAdapter;
+    private Handler h = new Handler();
+    private int delay = 5000;
+    private Runnable runnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,34 +62,13 @@ public class MainActivity extends AppCompatActivity {
         setModels();
 
         createViews();
-        setViewInvisible();
         showProgress();
         hackerAPI();
         spaceStationApi();
 
         recyclerView = findViewById(R.id.recyclerview);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getArticleList();
+        initRecView();
 
-            }
-        }, 1000);
-
-
-
-
-
-
-        recyclerView = findViewById(R.id.recyclerview);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                initRecView();
-                setViewsVisible();
-                setViews();
-            }
-        }, 5000);
 
         NoteFragment fragment = new NoteFragment();
         FragmentManager manager = getSupportFragmentManager();
@@ -93,26 +77,41 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
 
 
+        map.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+                intent.putExtra("latitude", spaceStationModels.iss_position().getLatitude());
+                intent.putExtra("longitude", spaceStationModels.iss_position().getLongitude());
+                startActivity(intent);
 
+            }
+        });
 
 
     }
+    @Override
+    protected void onResume() { //start handler as activity become visible
 
-    private void setViewsVisible() {
-        message.setVisibility(View.VISIBLE);
-        timeStamp.setVisibility(View.VISIBLE);
-        latitude.setVisibility(View.VISIBLE);
-        longitude.setVisibility(View.VISIBLE);
-        hackerCardViews.setVisibility(View.VISIBLE);
+        h.postDelayed(new Runnable() {
+            public void run() {
+                //do something
+                spaceStationApi();
+                runnable=this;
+
+                h.postDelayed(runnable, delay);
+            }
+        }, delay);
+
+        super.onResume();
     }
 
-    private void setViewInvisible() {
-        message.setVisibility(View.INVISIBLE);
-        timeStamp.setVisibility(View.INVISIBLE);
-        latitude.setVisibility(View.INVISIBLE);
-        longitude.setVisibility(View.INVISIBLE);
-        hackerCardViews.setVisibility(View.INVISIBLE);
+    @Override
+    protected void onPause() {
+        h.removeCallbacks(runnable); //stop handler when activity not visible
+        super.onPause();
     }
+
 
     private void setModels() {
         spaceStationModels = new SpaceStationModels();
@@ -138,6 +137,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<SpaceStationModels> call, Response<SpaceStationModels> response) {
                 spaceStationModels = response.body();
+                setViews();
+                Log.d(TAG, "Latitude: " + spaceStationModels.iss_position().getLatitude());
+                Log.d(TAG, "Longitude: " + spaceStationModels.iss_position().getLongitude());
 
             }
 
@@ -155,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
         longitude = findViewById(R.id.longitude);
         spaceStationModels = new SpaceStationModels();
         hackerCardViews = findViewById(R.id.hackerCardView);
+        map = findViewById(R.id.map_frag);
 
     }
     public void showProgress() {
@@ -171,8 +174,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initRecView() {
-        HackerAdapter hackerAdapter = new HackerAdapter(hackerNewsArticles);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+        hackerAdapter = new HackerAdapter(hackerNewsArticles);
         recyclerView.setAdapter(hackerAdapter);
         recyclerView.setLayoutManager(linearLayoutManager);
     }
@@ -193,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<Integer[]> call, Response<Integer[]> response) {
                 hackerTopStoriesModel = new HackerTopStoriesModel();
                 hackerTopStoriesModel.setTopstorie(response.body());
+                getArticleList();
 
             }
 
@@ -218,7 +222,6 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         service = retrofit.create(NetworkApi.class);
         Integer[] integers = hackerTopStoriesModel.getTopstorie();
-        hackerModels = new HackerModel[10];
 
         for (int i = 0; i < integers.length; i++) {
             if (i < 10) {
@@ -239,6 +242,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<HackerModel> call, Response<HackerModel> response) {
                         hackerNewsArticles.add(response.body());
+                        hackerAdapter.notifyDataSetChanged();
                         Log.d(TAG, hackerNewsArticles.get(hackerNewsArticles.size() - 1).getTitle());
                     }
 
