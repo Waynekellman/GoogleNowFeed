@@ -10,8 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -19,9 +22,11 @@ import java.util.ArrayList;
  */
 public class NoteFragment extends Fragment {
     private EditText title, description;
-    private Button save, load;
+    private Button save;
     private static final String SHARED_PREFS_KEY = "NotesSharedPrefs";
     private SharedPreferences saveNote;
+    private Spinner savedNotes;
+    private List<String> noteTitles;
 
 
     public NoteFragment() {
@@ -35,11 +40,11 @@ public class NoteFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_note, container, false);
         saveNote = getContext().getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
-
+        savedNotes = rootView.findViewById(R.id.get_notes);
         title = rootView.findViewById(R.id.title_note);
         description = rootView.findViewById(R.id.description_note);
         save = rootView.findViewById(R.id.save_note);
-        load = rootView.findViewById(R.id.get_notes);
+
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -53,16 +58,17 @@ public class NoteFragment extends Fragment {
                 description.setText("");
             }
         });
-        load.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                if (saveNote.getBoolean("BooleanKey",false)) {
-                    title.setText(saveNote.getString("title",null));
-                    description.setText(saveNote.getString("note", null));
-                }
-            }
-        });
+//        load.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                if (saveNote.getBoolean("BooleanKey",false)) {
+//                    title.setText(saveNote.getString("title",null));
+//                    description.setText(saveNote.getString("note", null));
+//                }
+//            }
+//        });
 
         return rootView;
     }
