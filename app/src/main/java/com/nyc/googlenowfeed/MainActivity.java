@@ -48,9 +48,6 @@ public class MainActivity extends AppCompatActivity {
     private CardView hackerCardViews;
     private NetworkApi service;
     private String hackerArticleBaseUrl = "https://hacker-news.firebaseio.com/v0/";
-    private HackerModel[] hackerModels;
-    private HackerModel model;
-    private Integer integer;
     private Button map;
 
     private HackerAdapter hackerAdapter;
@@ -225,7 +222,6 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         service = retrofit.create(NetworkApi.class);
         Integer[] integers = hackerTopStoriesModel.getTopstorie();
-        hackerModels = new HackerModel[10];
 
         for (int i = 0; i < integers.length; i++) {
             if (i < 10) {
